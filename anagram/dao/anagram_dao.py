@@ -1,4 +1,5 @@
 from pymongo import MongoClient, errors
+from pymongo.errors import ServerSelectionTimeoutError
 
 from app_exception import AppException, GenericErrorMessages
 
@@ -44,3 +45,38 @@ class AnagramDao:
 
         except (errors.ConnectionFailure, errors.ServerSelectionTimeoutError):
             raise AppException(GenericErrorMessages.DATABASE_ERROR)
+
+    def get_words_db(self) -> list:
+        """
+        Get words from database
+        :return: words from database
+        """
+
+        output = list()
+        db_words = self.get_words()
+
+        for db_word in db_words:
+            output.append(db_word['word'])
+
+        return output
+
+    def get_words(self) -> list:
+        """
+        Retrieve all the words from database
+        :return: words
+        """
+
+        try:
+            return list(self.mongo_collect.find({}, {'_id': False}))
+        except ServerSelectionTimeoutError:
+            raise AppException(GenericErrorMessages.DATABASE_ERROR)
+
+    def fill_database(self, data: list) -> bool:
+        """
+        Fill the database with the list data. First drop and then insert
+        :param data: data to insert
+        :return: bool
+        """
+        self.mongo_collect.drop()
+        self.mongo_collect.insert(data)
+        return True
