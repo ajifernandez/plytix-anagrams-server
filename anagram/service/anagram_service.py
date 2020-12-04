@@ -27,6 +27,15 @@ class AnagramService:
         logging.info("[anagram_service]Getting words")
         return self.db.get_words()
 
+    def save_words(self, words: list) -> bool:
+        logging.info("[anagram_service]Saving words")
+        return self.db.fill_database(words)
+
+    def get_anagrams(self, word: str) -> list:
+        logging.info("[anagram_service]Getting anagrams")
+        sorted_word = ''.join(sorted(word))
+        return self.anagrams.get(sorted_word, '-')
+
     @staticmethod
     def calculate_anagrams(words: list) -> dict:
         """

@@ -80,6 +80,9 @@ class AnagramDao:
         :param data: data to insert
         :return: bool
         """
-        self.mongo_collect.drop()
-        self.mongo_collect.insert(data)
+        try:
+            self.mongo_collect.drop()
+            self.mongo_collect.insert(data)
+        except ServerSelectionTimeoutError:
+            raise AppException(GenericErrorMessages.DATABASE_ERROR)
         return True

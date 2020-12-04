@@ -1,4 +1,4 @@
-from flask import Flask, Response, jsonify
+from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 from app_exception import AppException
 from anagram.dao.anagram_dao import AnagramDao
@@ -51,6 +51,37 @@ def get_words():
     except AppException as e:
         logging.error("[api]"+str(e))
 
+
+@app.route('/api/anagrams/save', methods=['POST'])
+def save():
+    """
+    Save the words into the database
+    :return: 200 ok or exception
+    """
+
+    try:
+        data = request.json
+        if anagramService.save_words(data):
+            return Response(status=200)
+        else:
+            return Response(status=500)
+    except AppException as e:
+        logging.error("[api]"+str(e))
+
+
+@app.route('/api/anagrams/anagrams', methods=['POST'])
+def get_anagrams():
+    """
+    Get anagrams that fit with the searched string
+    :return: 200 ok or exception
+    """
+
+    try:
+        data = request.data.decode('utf-8')
+        return jsonify(anagramService.get_anagrams(data))
+    except AppException as e:
+        logging.error("[api]"+str(e))
+        
 
 if __name__ == '__main__':
     app.run()
