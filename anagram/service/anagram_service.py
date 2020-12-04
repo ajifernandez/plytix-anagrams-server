@@ -21,6 +21,7 @@ class AnagramService:
     def fill_database(self, words: list) -> None:
         logging.info("[anagram_service]Filling database")
         self.db.fill_database(words)
+        self.anagrams = self.calculate_anagrams(self.db.get_words_db())
 
     def get_words(self) -> list:
         logging.info("[anagram_service]Getting words")
@@ -28,5 +29,14 @@ class AnagramService:
 
     @staticmethod
     def calculate_anagrams(words: list) -> dict:
+        """
+        Calculate the anagrams of the words list sorting every letter word and setting it as key
+        :param words: list of words
+        :return: dict with the anagrams
+        """
+        logging.info("[anagram_service]Generating dict of anagrams words")
         d = defaultdict(list)
+        for word in words:
+            key = ''.join(sorted(word))  # frase -> aefrs
+            d[key].append(word)
         return d

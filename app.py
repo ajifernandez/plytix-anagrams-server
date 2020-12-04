@@ -29,7 +29,7 @@ def fill_database():
     logging.info("[api]Filling database")
 
     try:
-        data = [{'word': 'riesgo'}, {'word': 'roma'}, {'word': 'frase'}, {'word': 'roma'}, {'word': 'paris'}]
+        data = [{'word': 'riesgo'}, {'word': 'roma'}, {'word': 'frase'}, {'word': 'paris'}]
         anagramService.fill_database(data)
         return Response(status=200)
     except AppException as e:
