@@ -1,7 +1,8 @@
 from pymongo import MongoClient, errors
 from pymongo.errors import ServerSelectionTimeoutError
-
 from app_exception import AppException, GenericErrorMessages
+import logging
+logging.basicConfig(level=logging.INFO)
 
 
 class AnagramDao:
@@ -27,8 +28,10 @@ class AnagramDao:
             self.mongo_collect = self.db[self.schema]
 
         except errors.ConfigurationError:
+            logging.error("[anagram_dao]CONFIGURATION_ERROR")
             raise AppException(GenericErrorMessages.CONFIGURATION_ERROR)
         except AppException as e:
+            logging.error("[anagram_dao]"+str(e))
             raise e
 
     def open_connection(self) -> MongoClient:

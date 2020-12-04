@@ -1,4 +1,5 @@
 from flask import Flask, Response, jsonify
+from flask_cors import CORS
 from app_exception import AppException
 from anagram.dao.anagram_dao import AnagramDao
 from anagram.service.anagram_service import AnagramService
@@ -12,6 +13,7 @@ config.read('config.ini')
 
 # Flask
 app = Flask(__name__)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Instantiate and Connect to database
 db = AnagramDao(config.get('DEFAULTS', 'connection_url'))
