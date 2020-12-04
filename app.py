@@ -20,7 +20,7 @@ db = AnagramDao(config.get('DEFAULTS', 'connection_url'))
 anagramService = AnagramService(db)
 
 
-@app.route('/api/testdata')
+@app.route('/api/fill')
 def fill_database():
     """
     Fill database with data test
@@ -33,3 +33,7 @@ def fill_database():
         return Response(status=200)
     except AppException as e:
         print(e)
+
+
+if __name__ == '__main__':
+    app.run()
