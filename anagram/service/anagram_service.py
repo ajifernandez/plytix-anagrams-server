@@ -16,12 +16,10 @@ class AnagramService:
         :param db: dao of Anagram
         """
         self.db = db
-        self.anagrams = self.calculate_anagrams(db.get_words_db())
 
     def fill_database(self, words: list) -> None:
         logging.info("[anagram_service]Filling database")
-        self.db.fill_database(words)
-        self.anagrams = self.calculate_anagrams(self.db.get_words_db())
+        self.db.fill_database(self.calculate_anagrams(words))
 
     def get_words(self) -> list:
         logging.info("[anagram_service]Getting words")
@@ -34,7 +32,7 @@ class AnagramService:
     def get_anagrams(self, word: str) -> list:
         logging.info("[anagram_service]Getting anagrams")
         sorted_word = ''.join(sorted(word))
-        return self.anagrams.get(sorted_word, '-')
+        return self.db.get_anagram(sorted_word)
 
     @staticmethod
     def calculate_anagrams(words: list) -> dict:

@@ -26,7 +26,7 @@ class AnagramDao:
             if self.schema not in self.db.collection_names():
                 self.db.create_collection(self.schema)
             self.mongo_collect = self.db[self.schema]
-
+            # self.mongo_collect.drop()
         except errors.ConfigurationError:
             logging.error("[anagram_dao]CONFIGURATION_ERROR")
             raise AppException(GenericErrorMessages.CONFIGURATION_ERROR)
@@ -49,19 +49,20 @@ class AnagramDao:
         except (errors.ConnectionFailure, errors.ServerSelectionTimeoutError):
             raise AppException(GenericErrorMessages.DATABASE_ERROR)
 
-    def get_words_db(self) -> list:
+    def get_anagram(self, word: str) -> list:
         """
-        Get words from database
-        :return: words from database
+        Retrieve the words that fit with the key
+        :return: words
         """
 
-        output = list()
-        db_words = self.get_words()
-
-        for db_word in db_words:
-            output.append(db_word['word'])
-
-        return output
+        try:
+            result = []
+            for o in list(self.mongo_collect.find({"anagram": {'$eq': word}})):
+                for word in o["words"]:
+                    result.append(word)
+            return result
+        except ServerSelectionTimeoutError:
+            raise AppException(GenericErrorMessages.DATABASE_ERROR)
 
     def get_words(self) -> list:
         """
@@ -70,11 +71,15 @@ class AnagramDao:
         """
 
         try:
-            return list(self.mongo_collect.find({}, {'_id': False}))
+            result = []
+            for o in list(self.mongo_collect.find({}, {'words': 1})):
+                for word in o["words"]:
+                    result.append(word)
+            return result
         except ServerSelectionTimeoutError:
             raise AppException(GenericErrorMessages.DATABASE_ERROR)
 
-    def fill_database(self, data: list) -> bool:
+    def fill_database(self, data: dict) -> bool:
         """
         Fill the database with the list data. First drop and then insert
         :param data: data to insert
@@ -82,7 +87,9 @@ class AnagramDao:
         """
         try:
             self.mongo_collect.drop()
-            self.mongo_collect.insert(data)
+            for key in data:
+                self.mongo_collect.insert({'anagram': key, 'words': data[key]})
+            # self.mongo_collect.insert(data)
         except ServerSelectionTimeoutError:
             raise AppException(GenericErrorMessages.DATABASE_ERROR)
         return True
