@@ -1,5 +1,4 @@
 from collections import defaultdict
-
 from anagram.dao.anagram_dao import AnagramDao
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -27,7 +26,7 @@ class AnagramService:
 
     def save_words(self, words: list) -> bool:
         logging.info("[anagram_service]Saving words")
-        return self.db.fill_database(words)
+        return self.db.fill_database(self.calculate_anagrams(words))
 
     def get_anagrams(self, word: str) -> list:
         logging.info("[anagram_service]Getting anagrams")
@@ -44,6 +43,6 @@ class AnagramService:
         logging.info("[anagram_service]Generating dict of anagrams words")
         d = defaultdict(list)
         for word in words:
-            key = ''.join(sorted(word))  # frase -> aefrs
-            d[key].append(word)
+            key = ''.join(sorted(word))
+            d[word].append(key)
         return d

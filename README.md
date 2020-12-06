@@ -5,4 +5,9 @@
 3. Change if necessary mongodb url at 'config.ini'
 4. run app.py
    
-- To fill the database with dummy data: http://127.0.0.1:5000/api/anagrams/fill
+- There are a method to fill the database with dummy data: 
+  http://127.0.0.1:5000/api/anagrams/fill
+
+5. doc generated with pdoc3 lib
+- pip3 install pdoc3
+- pdoc --html app

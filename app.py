@@ -1,10 +1,12 @@
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
+
 from app_exception import AppException
 from anagram.dao.anagram_dao import AnagramDao
 from anagram.service.anagram_service import AnagramService
 import configparser
 import logging
+
 logging.basicConfig(level=logging.INFO)
 
 # Configuration reader/parser of config.ini file

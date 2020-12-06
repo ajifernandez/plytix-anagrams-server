@@ -58,8 +58,7 @@ class AnagramDao:
         try:
             result = []
             for o in list(self.mongo_collect.find({"anagram": {'$eq': word}})):
-                for word in o["words"]:
-                    result.append(word)
+                result.append(o["word"])
             return result
         except ServerSelectionTimeoutError:
             raise AppException(GenericErrorMessages.DATABASE_ERROR)
@@ -72,9 +71,8 @@ class AnagramDao:
 
         try:
             result = []
-            for o in list(self.mongo_collect.find({}, {'words': 1})):
-                for word in o["words"]:
-                    result.append(word)
+            for o in list(self.mongo_collect.find({}, {'word': 1})):
+                result.append(o["word"])
             return result
         except ServerSelectionTimeoutError:
             raise AppException(GenericErrorMessages.DATABASE_ERROR)
@@ -87,9 +85,8 @@ class AnagramDao:
         """
         try:
             self.mongo_collect.drop()
-            for key in data:
-                self.mongo_collect.insert({'anagram': key, 'words': data[key]})
-            # self.mongo_collect.insert(data)
+            for key in data:  # where the key is the natural word
+                self.mongo_collect.insert({'word': key, 'anagram': data[key]})
         except ServerSelectionTimeoutError:
             raise AppException(GenericErrorMessages.DATABASE_ERROR)
         return True
