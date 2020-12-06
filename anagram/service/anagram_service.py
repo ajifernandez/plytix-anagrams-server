@@ -16,17 +16,18 @@ class AnagramService:
         """
         self.db = db
 
-    def fill_database(self, words: list) -> None:
-        logging.info("[anagram_service]Filling database")
-        self.db.fill_database(self.calculate_anagrams(words))
-
     def get_words(self) -> list:
         logging.info("[anagram_service]Getting words")
         return self.db.get_words()
 
     def save_words(self, words: list) -> bool:
+        """
+        Save the word list after calculate every anagram
+        :param words: list of word
+        :return: true if persist the data
+        """
         logging.info("[anagram_service]Saving words")
-        return self.db.fill_database(self.calculate_anagrams(words))
+        return self.db.save_words(self.calculate_anagrams(words))
 
     def get_anagrams(self, word: str) -> list:
         logging.info("[anagram_service]Getting anagrams")

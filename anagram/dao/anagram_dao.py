@@ -2,7 +2,6 @@ from pymongo import MongoClient, errors
 from pymongo.errors import ServerSelectionTimeoutError
 from app_exception import AppException, GenericErrorMessages
 import logging
-logging.basicConfig(level=logging.INFO)
 
 
 class AnagramDao:
@@ -12,9 +11,11 @@ class AnagramDao:
         Constructor of AnagramDao with the connection url
         :param connection_url: url of database connection
         """
+        logging.info("[anagram_dao]Creating AnagramDao")
         self.connection_url = connection_url
         self.schema = connection_url.split('/')[-1]
-
+        logging.info("[anagram_dao]connection_url " + self.connection_url)
+        logging.info("[anagram_dao]schema " + self.schema)
         try:
             # Connect with mongodb
             self.connection = self.open_connection()
@@ -26,7 +27,6 @@ class AnagramDao:
             if self.schema not in self.db.collection_names():
                 self.db.create_collection(self.schema)
             self.mongo_collect = self.db[self.schema]
-            # self.mongo_collect.drop()
         except errors.ConfigurationError:
             logging.error("[anagram_dao]CONFIGURATION_ERROR")
             raise AppException(GenericErrorMessages.CONFIGURATION_ERROR)
@@ -40,21 +40,21 @@ class AnagramDao:
         :return: connection object
         :rtype: object
         """
-
+        logging.info("[anagram_dao]Open the database connection")
         try:
             connection = MongoClient(self.connection_url)
             connection.is_mongos
-            return connection
-
         except (errors.ConnectionFailure, errors.ServerSelectionTimeoutError):
             raise AppException(GenericErrorMessages.DATABASE_ERROR)
+        logging.info("[anagram_dao]Connection opened")
+        return connection
 
     def get_anagram(self, word: str) -> list:
         """
         Retrieve the words that fit with the key
         :return: words
         """
-
+        logging.info("[anagram_dao]getting words of anagram " + word)
         try:
             result = []
             for o in list(self.mongo_collect.find({"anagram": {'$eq': word}})):
@@ -68,7 +68,7 @@ class AnagramDao:
         Retrieve all the words from database
         :return: words
         """
-
+        logging.info("[anagram_dao]getting all the words")
         try:
             result = []
             for o in list(self.mongo_collect.find({}, {'word': 1})):
@@ -77,12 +77,13 @@ class AnagramDao:
         except ServerSelectionTimeoutError:
             raise AppException(GenericErrorMessages.DATABASE_ERROR)
 
-    def fill_database(self, data: dict) -> bool:
+    def save_words(self, data: dict) -> bool:
         """
-        Fill the database with the list data. First drop and then insert
+        Save the data into database. First drop and then insert
         :param data: data to insert
         :return: bool
         """
+        logging.info("[anagram_dao]saving words and anagrams")
         try:
             self.mongo_collect.drop()
             for key in data:  # where the key is the natural word

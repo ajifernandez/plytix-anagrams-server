@@ -33,8 +33,8 @@ def fill_database():
     logging.info("[api]Filling database")
 
     try:
-        data = ['riesgo', 'roma', 'mora', 'frase', 'paris']
-        anagramService.fill_database(data)
+        data = ['riesgo', 'roma', 'mora', 'frase', 'paris']  # Dummy data
+        anagramService.save_words(data)
         return Response(status=200)
     except AppException as e:
         logging.error("[api]"+str(e))
@@ -60,7 +60,7 @@ def save():
     Save the words into the database
     :return: 200 ok or exception
     """
-
+    logging.info("[api]Saving words")
     try:
         data = request.json
         if anagramService.save_words(data):
@@ -77,7 +77,7 @@ def get_anagrams():
     Get anagrams that fit with the searched string
     :return: 200 ok or exception
     """
-
+    logging.info("[api]Getting anagrams")
     try:
         data = request.data.decode('utf-8')
         return jsonify(anagramService.get_anagrams(data))
